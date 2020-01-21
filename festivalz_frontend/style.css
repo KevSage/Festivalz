@@ -1,0 +1,30 @@
+.sidenav {
+    color: skyblue;
+    margin-top: 0px;
+    position: absolute;
+    background-color: skyblue
+
+}
+
+#menu-list a:hover {
+
+  color: skyblue;
+  transition: 0.5s ease
+}
+
+nav {
+    justify-content: center;
+    margin-bottom: 0px;
+}
+#nav {
+    margin-bottom: 0px;
+}
+
+.test {
+    display: flex;
+    text-align: center;
+    padding-top: 100px;
+    justify-content: center;
+    height: 100vh;
+
+}
