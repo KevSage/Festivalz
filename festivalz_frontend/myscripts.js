@@ -189,13 +189,55 @@ function allArtists(event) {
 
 function createUser(event) {
     event.preventDefault()
+    let pic = []
     let newName = event.target.querySelector("#newUserName")
     let username = newName.value 
     let regionOption = event.target.querySelector("#regionOption")
     let userRegion = regionOption.value 
     
-
+    let newPic= fetchPic()
     debugger
-    console.log("Created User")
+    console.log(newPic)
+    const newUser = {
+        "username": username,
+        "image": newPic,
+        "region": userRegion
+    }
+
+    fetch("http://127.0.0.1:3000/users", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+        debugger
+    })
+    //Add User to DB
+
+    //Fetch User Pic
+   
+    // console.log("Created User")
+    
+}
+
+function fetchPic() {
+    let userPic = []
+    fetch("https://randomuser.me/api/")
+    .then((response) => {
+      return response.json();
+    })
+    .then(function(data) {
+        let userData = data['results']
+        userData = userData[0]
+        let pictures = userData.picture
+        let pics = Object.values(pictures)
+        console.log(pics[2])
+        return pics[2]
+
+    })
 }
 
