@@ -4,6 +4,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // generateUserPage(event)
        generateLogin(event)
 })
+let user = {
+    "username": "",
+    "image": "",
+    "region": ""
+}
 
 function generateLogin(event) {
    event.preventDefault
@@ -191,15 +196,18 @@ function createUser(event) {
     event.preventDefault()
     let pic = []
     let newName = event.target.querySelector("#newUserName")
-    let username = newName.value 
+    let userName = newName.value 
     let regionOption = event.target.querySelector("#regionOption")
     let userRegion = regionOption.value 
     
-    let newPic= fetchPic()
+    user.username = userName
+    user.region = userRegion
+    let blah = fetchPic()
     debugger
+
     console.log(newPic)
     const newUser = {
-        "username": username,
+        "username": userName,
         "image": newPic,
         "region": userRegion
     }
@@ -214,30 +222,25 @@ function createUser(event) {
     .then((response) => response.json())
     .then((data) => {
         console.log(data)
-        debugger
-    })
-    //Add User to DB
 
-    //Fetch User Pic
-   
-    // console.log("Created User")
+        
+    })
     
 }
 
 function fetchPic() {
     let userPic = []
     fetch("https://randomuser.me/api/")
-    .then((response) => {
-      return response.json();
-    })
-    .then(function(data) {
+    .then(response => response.json())
+    .then(data => {
         let userData = data['results']
         userData = userData[0]
         let pictures = userData.picture
         let pics = Object.values(pictures)
         console.log(pics[2])
+        user.image = pics[2]
+        debugger
         return pics[2]
-
     })
 }
 
