@@ -48,31 +48,63 @@ function registerUser(event) {
     let main = document.querySelector('.test')
     main.innerHTML = ""
 
+   //Create Form
     let registerForm = document.createElement('form')
    registerForm.addEventListener('submit', createUser)
-   registerForm.classList.add("uk-form-horizontal", "uk-margin-large")
+   registerForm.classList.add("uk-form-stacked")
+   //Form<Fieldset
    let registerFieldset = document.createElement('FIELDSET')
    registerFieldset.classList.add("uk-fieldset")
-   let registerLabel = document.createElement('Label')
-   registerLabel.classList.add("uk-Label")
-   registerLabel.innerHTML = "Register"
-   registerLabel.style.color = "white"
+
    let registerDiv = document.createElement('div')
    registerDiv.classList.add("uk-margin")
 
+   //Form<Fieldset<Username
    let nameInput = document.createElement('input')
+   nameInput.setAttribute('id', 'newUserName')
    nameInput.classList.add('uk-input', 'uk-form-width-medium')
+   nameInput.placeholder = "Enter Username"
+
+   //Form<Fieldset<Region Div
+   let regionDiv = document.createElement('div')
+   regionDiv.classList.add('uk-margin')
+   //Region Select
+   let regionSelect = document.createElement('select')
+   regionSelect.classList.add('uk-select')
+   regionSelect.setAttribute('id', 'regionOption')
+   //Form<Fieldset<RegionDiv<RegionSelect<Region Options
+   let regionOption1 = document.createElement('option')
+   regionOption1.innerHTML = "Southeast"
+   let regionOption2 = document.createElement('option')
+   regionOption2.innerHTML = "Northeast"
+   let regionOption3 = document.createElement('option')
+   regionOption3.innerHTML = "Midwest"
+   let regionOption4 = document.createElement('option')
+   regionOption4.innerHTML = "West Coast"
+   let regionOption5 = document.createElement('option')
+   regionOption5.innerHTML = "Southwest"
+   //Append Region
+   regionSelect.appendChild(regionOption1)
+   regionSelect.appendChild(regionOption2)
+   regionSelect.appendChild(regionOption3)
+   regionSelect.appendChild(regionOption4)
+   regionSelect.appendChild(regionOption5)
    
+   //Append Button
    let registerButton = document.createElement('button')
    registerButton.innerHTML = "Register"
    registerButton.classList.add("uk-button", "uk-button-default")
    registerButton.style.color = "white"
-   registerFieldset.appendChild(registerLegend)
+   regionDiv.appendChild(regionSelect)
+  
+//    registerDiv.appendChild(usernameLabel)
    registerFieldset.appendChild(registerDiv)
-   registerDiv.appendChild(registerInput)
+   registerDiv.appendChild(nameInput)
+   registerDiv.appendChild(regionDiv)
    registerDiv.appendChild(registerButton)
    registerForm.appendChild(registerFieldset)
    main.appendChild(registerForm)
+  
 
 }
 
@@ -155,7 +187,15 @@ function allArtists(event) {
     )
 }
 
-function createUser() {
+function createUser(event) {
+    event.preventDefault()
+    let newName = event.target.querySelector("#newUserName")
+    let username = newName.value 
+    let regionOption = event.target.querySelector("#regionOption")
+    let userRegion = regionOption.value 
+    
+
+    debugger
     console.log("Created User")
 }
 
