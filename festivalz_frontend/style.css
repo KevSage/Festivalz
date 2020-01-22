@@ -28,3 +28,13 @@ nav {
     height: 100vh;
 
 }
+
+.nav-items {
+    padding-left: 20px
+}
+
+.uk-card-default{
+    /* width: 20%;
+    padding: 20px */
+    width: 40% important!;
+}

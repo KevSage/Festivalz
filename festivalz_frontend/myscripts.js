@@ -1,8 +1,15 @@
 
+// Implement Scroll to top 
+
 document.addEventListener('DOMContentLoaded', (event) => {
     // allArtists(event)
     // generateUserPage(event)
        generateLogin(event)
+       let artistLink = document.querySelector('#artists-link')
+       artistLink.addEventListener('click', allArtists)
+
+       let festivalLink = document.querySelector('#festivals-link')
+       festivalLink.addEventListener('click', allFestivals)
 })
 let user = {
     "username": "",
@@ -129,11 +136,17 @@ function generateUserPage() {
 }
 
 function generateFestivals() {
-  
+
 }
 function allArtists(event) {
     event.preventDefault()
-
+    let main = document.querySelector('.test')
+    let artists = document.querySelector('.artists')
+    // artists.innerHTML = ""
+    main.innerHTML = ""
+    main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/04-22-16_DPV_6412_Sweetwater_420_Fest_Disco_Biscuits_by_Dave_Vann.jpg')";
+    main.style.height = "500px"
+    artists.innerHTML = ""
  fetch("http://localhost:3000/artists")
     .then(res => res.json())
     .then(data => {
@@ -142,6 +155,10 @@ function allArtists(event) {
             artistCard.classList.add("uk-card")
             artistCard.classList.add("uk-card-default")
             artistCard.classList.add("uk-grid-small")
+            artistCard.classList.add("uk-child-width-expand@s")
+            artistCard.classList.add("uk-text-center")
+            artistCard.style.display = "inline"
+
 
 
             let artistMedia = document.createElement('div')
@@ -154,8 +171,11 @@ function allArtists(event) {
             artistBody.classList.add("uk-card-body")
 
 
-            let name = document.createElement('h1')
+            let name = document.createElement('a')
             name.innerHTML = artist.name
+            name.addEventListener('click', showArtistPage)
+            name.dataset.id = artist.id
+            
 
             let img = document.createElement('img')
             img.src = artist.image
@@ -192,6 +212,163 @@ function allArtists(event) {
     )
 }
 
+function allFestivals(event) {
+    event.preventDefault()
+    let main = document.querySelector('.test')
+    let artists = document.querySelector('.artists')
+    main.innerHTML = ""
+    main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/04-22-16_DPV_6412_Sweetwater_420_Fest_Disco_Biscuits_by_Dave_Vann.jpg')";
+    main.style.height = "500px"
+    artists.innerHTML = ""
+ fetch("http://localhost:3000/festivals")
+    .then(res => res.json())
+    .then(data => {
+        data.forEach(function(festival) {
+            let festivalCard = document.createElement('div')
+            festivalCard.classList.add("uk-card")
+            festivalCard.classList.add("uk-card-default")
+            festivalCard.classList.add("uk-grid-small")
+            festivalCard.classList.add("uk-child-width-expand@s")
+            festivalCard.classList.add("uk-text-center")
+            festivalCard.style.display = "inline"
+            festivalCard.style.width = "40%"
+
+
+
+            let festivalMedia = document.createElement('div')
+            festivalMedia.classList.add("uk-card-media-top")
+            festivalMedia.classList.add("uk-parallax")
+            festivalMedia.classList.add("uk-align-center")
+
+
+            let festivalBody = document.createElement('div')
+            festivalBody.classList.add("uk-card-body")
+
+
+            let name = document.createElement('a')
+            name.innerHTML = festival.name
+            name.addEventListener('click', showFestivalPage)
+            name.dataset.id = festival.id
+            
+
+            let img = document.createElement('img')
+            img.src = festival.image
+            img.width = 600;
+            
+            festivalMedia.appendChild(img)
+
+ 
+            let description = document.createElement('p')
+            description.innerHTML = festival.description
+
+            let date = document.createElement('p')
+            date.innerHTML = festival.date
+
+            let location = document.createElement('p')
+            location.innerHTML = festival.location
+
+            let ticket = document.createElement('p')
+            ticket.innerHTML = festival.ticket_price
+            
+            let allFestivals = document.querySelector('.artists')
+
+            
+            festivalBody.appendChild(name)
+            festivalBody.appendChild(description)
+            festivalBody.appendChild(date)
+            festivalBody.appendChild(location)
+            festivalBody.appendChild(ticket)
+
+
+            festivalMedia.appendChild(img)
+
+            festivalCard.appendChild(festivalMedia)
+            festivalCard.appendChild(festivalBody)
+            festivalCard.style.marginBottom = "50px"
+            allFestivals.appendChild(festivalCard)
+
+
+       })
+       
+    }
+    )
+}
+
+
+function showArtistPage(event) {
+    let main = document.querySelector('.artists')
+    main.style.height = "500px"
+    fetch("http://localhost:3000/artists/" + event.target.dataset.id)
+    .then(res => res.json())
+    .then(artist => {
+        
+        //jumbotron
+        
+        //Artist Name
+        let name = document.createElement('h1')
+        name.innerHTML = artist.name   
+        //Upcoming Performances 
+        let performanceDiv = document.createElement('div')
+        performanceDiv.style.display = "inline"
+        let upcoming = document.createElement('h3')
+        upcoming.innerHTML = `${artist.name}'s Upcoming Performances`
+        performanceDiv.appendChild(upcoming)
+
+        artist.festivals.forEach(function(festival) { 
+            //jumbotron
+           let jumbotron = document.querySelector('.test')
+           jumbotron.innerHTML = ''
+           main.innerHTML = ''
+           main.classList.add('uk-container')
+           main.style.textAlign = "center"
+
+           jumbotron.style.backgroundImage = `url(${artist.image})`;
+           jumbotron.style.backgroundSize = "100%"
+           jumbotron.classList.add('uk-container')
+
+           //Festival Div
+           let festivalDiv = document.createElement('div')
+           festivalDiv.style.display = "inline-block"
+           festivalDiv.style.width = "40%"
+           festivalDiv.style.padding = "20px"
+
+           //Festival Info
+           let festivalPic = document.createElement('img')
+           festivalPic.style.height = "350px"
+           festivalPic.src = festival.image
+           let performance = document.createElement('h4')
+           performance.innerHTML = festival.name
+           let date = document.createElement('p')
+           date.innerHTML = festival.date
+           let venue = document.createElement('p')
+           venue.innerHTML = festival.location
+           let price = document.createElement('p')
+           price.innerHTML = `Tickets: $${festival.ticket_price}`
+           let reserveBtn = document.createElement('button')
+           reserveBtn.classList.add('uk-button-primary', 'uk-button')
+           reserveBtn.innerHTML = "I'm Going!"
+           main.appendChild(performanceDiv)
+
+           //Event Listeners
+           reserveBtn.addEventListener('click', followArtist)
+           reserveBtn.addEventListener('click', showFestival)
+           performanceDiv.appendChild(festivalDiv)
+        //    performanceDiv.appendChild(upcoming)
+           festivalDiv.appendChild(festivalPic)
+           festivalDiv.appendChild(performance)
+           festivalDiv.appendChild(venue)
+           festivalDiv.appendChild(date)
+           festivalDiv.appendChild(price)
+           festivalDiv.appendChild(reserveBtn)
+
+        })
+        debugger
+
+        console.log(artist.performances)
+    })
+
+}
+
 function createUser(event) {
     event.preventDefault()
     let pic = []
@@ -203,13 +380,36 @@ function createUser(event) {
     user.username = userName
     user.region = userRegion
     let blah = fetchPic()
-    debugger
+    // debugger
 
-    console.log(newPic)
+    // console.log(newPic)
+    // const newUser = {
+    //     "username": userName,
+    //     "image": newPic,
+    //     "region": userRegion
+    // }
+
+    // fetch("http://127.0.0.1:3000/users", {
+    //     method: "POST",
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(newUser)
+    // })
+    // .then((response) => response.json())
+    // .then((data) => {
+    //     console.log(data)
+
+    //     debugger
+    // })
+    
+}
+
+function postUserData() {
     const newUser = {
-        "username": userName,
-        "image": newPic,
-        "region": userRegion
+        "username": user.username,
+        "image": user.image,
+        "region": user.region
     }
 
     fetch("http://127.0.0.1:3000/users", {
@@ -223,9 +423,8 @@ function createUser(event) {
     .then((data) => {
         console.log(data)
 
-        
+        debugger
     })
-    
 }
 
 function fetchPic() {
@@ -239,8 +438,14 @@ function fetchPic() {
         let pics = Object.values(pictures)
         console.log(pics[2])
         user.image = pics[2]
-        debugger
-        return pics[2]
+        postUserData()
     })
 }
 
+function followArtist() {
+
+}
+
+function showFestivalPage() {
+    
+}
