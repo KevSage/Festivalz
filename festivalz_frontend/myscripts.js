@@ -11,16 +11,18 @@ document.addEventListener('DOMContentLoaded', (event) => {
        let festivalLink = document.querySelector('#festivals-link')
        festivalLink.addEventListener('click', allFestivals)
 })
-let user = {
+let currentUser = {
     "username": "",
     "image": "",
-    "region": ""
+    "region": "",
+    "id": ""
 }
 
 function generateLogin(event) {
    event.preventDefault
    let main = document.querySelector('.test')
    main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/04-22-16_DPV_6412_Sweetwater_420_Fest_Disco_Biscuits_by_Dave_Vann.jpg')";
+   main.classList.add("uk-background-fixed")
    main.style.height = "500px"
 
    let loginForm = document.createElement('form')
@@ -34,13 +36,16 @@ function generateLogin(event) {
    let loginDiv = document.createElement('div')
    loginDiv.classList.add("uk-margin")
    let loginInput = document.createElement('input')
+   loginInput.id = "loginInput"
    let loginButton = document.createElement('button')
    loginButton.innerHTML = "Login"
    loginButton.classList.add("uk-button", "uk-button-default")
    loginButton.style.color = "white"
    loginInput.classList.add('uk-input', 'uk-form-width-medium')
+   loginButton.addEventListener('click', loginUser)
    let register = document.createElement('a')
    register.innerHTML = "Sign up now!"
+
    register.addEventListener('click', registerUser)
    register.style.marginLeft = "30px"
    register.style.color = "30px"
@@ -53,6 +58,24 @@ function generateLogin(event) {
    loginForm.appendChild(loginFieldset)
    main.appendChild(loginForm)
 
+}
+
+function loginUser(event) {
+    event.preventDefault()
+    let input = document.querySelector('#loginInput').value
+    fetch("http://127.0.0.1:3000/users")
+    .then(response => response.json())
+    .then(users => {
+        users.forEach(function(user) {
+            if(user.username === input) {
+                currentUser = user
+                showUserPage()
+
+            }
+        })
+    })
+
+    
 }
 
 function registerUser(event) {
@@ -309,7 +332,7 @@ function showArtistPage(event) {
         name.innerHTML = artist.name   
         //Upcoming Performances 
         let performanceDiv = document.createElement('div')
-        performanceDiv.style.display = "inline"
+        performanceDiv.style.display = "inline-block"
         let upcoming = document.createElement('h3')
         upcoming.innerHTML = `${artist.name}'s Upcoming Performances`
         performanceDiv.appendChild(upcoming)
@@ -334,7 +357,7 @@ function showArtistPage(event) {
 
            //Festival Info
            let festivalPic = document.createElement('img')
-           festivalPic.style.height = "350px"
+        //    festivalPic.style.height = "350px"
            festivalPic.src = festival.image
            let performance = document.createElement('h4')
            performance.innerHTML = festival.name
@@ -349,20 +372,21 @@ function showArtistPage(event) {
            reserveBtn.innerHTML = "I'm Going!"
            main.appendChild(performanceDiv)
 
-           //Event Listeners
-           reserveBtn.addEventListener('click', followArtist)
-           reserveBtn.addEventListener('click', showFestival)
-           performanceDiv.appendChild(festivalDiv)
-        //    performanceDiv.appendChild(upcoming)
            festivalDiv.appendChild(festivalPic)
            festivalDiv.appendChild(performance)
            festivalDiv.appendChild(venue)
            festivalDiv.appendChild(date)
            festivalDiv.appendChild(price)
            festivalDiv.appendChild(reserveBtn)
+           performanceDiv.appendChild(festivalDiv)
+           debugger
+           //Event Listeners
+           reserveBtn.addEventListener('click', followArtist)
+           reserveBtn.addEventListener('click', showFestivalPage)
+         
+           main.appendChild(performanceDiv)
 
         })
-        debugger
 
         console.log(artist.performances)
     })
@@ -377,54 +401,10 @@ function createUser(event) {
     let regionOption = event.target.querySelector("#regionOption")
     let userRegion = regionOption.value 
     
-    user.username = userName
-    user.region = userRegion
-    let blah = fetchPic()
-    // debugger
-
-    // console.log(newPic)
-    // const newUser = {
-    //     "username": userName,
-    //     "image": newPic,
-    //     "region": userRegion
-    // }
-
-    // fetch("http://127.0.0.1:3000/users", {
-    //     method: "POST",
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(newUser)
-    // })
-    // .then((response) => response.json())
-    // .then((data) => {
-    //     console.log(data)
-
-    //     debugger
-    // })
+    currentUser.username = userName
+    currentUser.region = userRegion
+    fetchPic()
     
-}
-
-function postUserData() {
-    const newUser = {
-        "username": user.username,
-        "image": user.image,
-        "region": user.region
-    }
-
-    fetch("http://127.0.0.1:3000/users", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser)
-    })
-    .then((response) => response.json())
-    .then((data) => {
-        console.log(data)
-
-        debugger
-    })
 }
 
 function fetchPic() {
@@ -437,9 +417,74 @@ function fetchPic() {
         let pictures = userData.picture
         let pics = Object.values(pictures)
         console.log(pics[2])
-        user.image = pics[2]
+        currentUser.image = pics[2]
         postUserData()
     })
+}
+
+function postUserData() {
+    const newUser = {
+        "username": currentUser.username,
+        "image": currentUser.image,
+        "region": currentUser.region
+    }
+
+    fetch("http://127.0.0.1:3000/users", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+        currentUser.id = data.id
+        showUserPage()
+        
+    })
+}
+
+function showUserPage() {
+
+    let main = document.querySelector('.artists')
+    main.innerHTML = ''
+    //Create container
+    let article = document.createElement('article')
+    article.classList.add('uk-comment', 'uk-comment-primary')
+    let header = document.createElement('header')
+    header.classList.add("uk-comment-header", "uk-grid-medium", "uk-flex-middle")
+    let grid = document.createAttribute("uk-grid")
+    header.setAttributeNode(grid)
+
+    //image div
+    let imgDiv = document.createElement('div')
+    imgDiv.classList.add('uk-width-auto')
+    //image
+    let img = document.createElement('img')
+    img.classList.add('uk-comment-avatar')
+    img.src = currentUser.image
+    img.style.width = "150px"
+    img.style.height = "150px"
+    img.style.border_radius = "50%"
+
+    imgDiv.appendChild(img)
+
+    //User Info
+    let infoDiv = document.createElement('div')
+    infoDiv.classList.add('uk-width-expand')
+    let userName = document.createElement('h4')
+    userName.classList.add('uk-comment-title', 'uk-margin-remove')
+    userName.innerHTML = currentUser.username
+    infoDiv.appendChild(userName)
+    
+    header.appendChild(imgDiv)
+    header.appendChild(infoDiv)
+    article.appendChild(header)
+    main.appendChild(article)
+    console.log(currentUser)
+    
+    debugger
 }
 
 function followArtist() {
@@ -447,5 +492,5 @@ function followArtist() {
 }
 
 function showFestivalPage() {
-    
+    console.log("Working")
 }
