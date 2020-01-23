@@ -300,7 +300,7 @@ function allFestivals(event) {
             location.innerHTML = festival.location
 
             let ticket = document.createElement('p')
-            ticket.innerHTML = festival.ticket_price
+            ticket.innerHTML = `$${festival.ticket_price}`
             
             let allFestivals = document.querySelector('.artists')
 
@@ -351,6 +351,11 @@ function showArtistPage(event) {
          let spotify = artist.spotify
          iframe.src = spotify
          iframe.style.display = 'block'
+         iframe.margin = "0px"
+
+         //Followers
+         let followers = document.createElement("p")
+         followers.innerHTML = `${artist.follows.length} Followers`
 
          //Follow Btn
          let followBtn = document.createElement('button')
@@ -365,6 +370,7 @@ function showArtistPage(event) {
          artistInfo.appendChild(name)
          artistInfo.appendChild(bio)
          artistInfo.appendChild(iframe)
+         artistInfo.appendChild(followers)
          artistInfo.appendChild(followBtn)
 
 
@@ -400,10 +406,14 @@ function showArtistPage(event) {
 
            //Festival Info
            let festivalPic = document.createElement('img')
-        //    festivalPic.style.height = "350px"
            festivalPic.src = festival.image
-           let performance = document.createElement('h4')
+           let performance = document.createElement('a')
            performance.innerHTML = festival.name
+           performance.style.fontFamily = "Rock Salt,cursive"
+           performance.style.fontSize = "20px"
+
+           performance.dataset.id = festival.id
+           performance.addEventListener('click', showFestivalPage)
            let date = document.createElement('p')
            date.innerHTML = festival.date
            let venue = document.createElement('p')
@@ -423,8 +433,8 @@ function showArtistPage(event) {
            festivalDiv.appendChild(reserveBtn)
            performanceDiv.appendChild(festivalDiv)
            //Event Listeners
-           reserveBtn.addEventListener('click', followArtist)
-           reserveBtn.addEventListener('click', showFestivalPage)
+           reserveBtn.addEventListener('click', attendFestival)
+        //    reserveBtn.addEventListener('click', showFestivalPage)
          
            main.appendChild(performanceDiv)
 
@@ -531,7 +541,7 @@ function showUserPage() {
     article.appendChild(header)
     main.appendChild(article)
 
-    //Follows
+    //Fetch Follows
     
 
     fetch("http://localhost:3000/users/" + currentUser.id)
@@ -548,6 +558,47 @@ function showUserPage() {
             followDiv.appendChild(follow)
             main.appendChild(followDiv)
 
+            let unfollowBtn = document.createElement('button')
+            unfollowBtn.innerHTML = "Unfollow"
+            unfollowBtn.classList.add("uk-button", "uk-button-danger", "demo")
+            unfollowBtn.addEventListener('click', unfollowArtist)
+            followDiv.appendChild(unfollowBtn)
+            main.appendChild(followDiv)
+
+        })
+
+       }
+    })
+
+    //Fetch Festivals
+    fetch("http://localhost:3000/users/" + currentUser.id)
+    .then(res => res.json())
+    .then(user => {
+
+        debugger
+        if(user.festivals) {
+            let attending = document.createElement('h4')
+            attending.innerHTML = `${currentUser.username} is going to`
+
+          user.festivals.forEach(function(festival) {
+            let festivalDiv = document.createElement('div')
+            let attendDiv = document.createElement('div')
+            
+            let festivalLink = document.createElement('a')
+            festivalLink.dataset.id = festival.id
+            festivalLink.innerHTML = festival.name
+            festivalLink.addEventListener('click', showFestivalPage)
+
+            let attendFestivalBtn = document.createElement('button')
+            attendFestivalBtn.innerHTML = "Remove"
+            attendFestivalBtn.classList.add("uk-button", "uk-button-danger", "demo")
+            attendFestivalBtn.addEventListener('click', removeFestival)
+            attendDiv.appendChild(attending)
+            attendDiv.appendChild(festivalLink)
+            attendDiv.appendChild(attendFestivalBtn)
+            festivalDiv.appendChild(attendDiv)
+            main.appendChild(festivalDiv)
+
         })
 
        }
@@ -556,6 +607,8 @@ function showUserPage() {
     console.log(currentUser)
     
 }
+
+//Fetch Festivals
 
 function followArtist(event) {
 
@@ -583,6 +636,127 @@ function followArtist(event) {
    console.log(event.target)
 }
 
-function showFestivalPage() {
+function showFestivalPage(event) {
+
+    let main = document.querySelector('.artists')
+    main.style.height = "500px"
+
+
+    fetch("http://localhost:3000/festivals/" + event.target.dataset.id)
+    .then(res => res.json())
+    .then(festival => {
+
+        //Jumbotron
+
+        let jumbotron = document.querySelector('.test')
+        jumbotron.innerHTML = ''
+        main.innerHTML = ''
+        main.classList.add('uk-container')
+        main.style.justifyContent = "center"
+        jumbotron.style.backgroundImage = `url(${festival.image})`;
+        jumbotron.style.backgroundSize = "100%"
+        jumbotron.classList.add('uk-container')
+
+         //Festival Info div
+        let festivalInfo = document.createElement('div')
+        festivalInfo.style.textAlign = "center"
+
+        //Festival Name
+        let name = document.createElement('h1')
+        name.innerHTML = festival.name   
+         //Festival Description
+         let description = document.createElement('p')
+         description.innerHTML = festival.description
+         //Festival Date
+        let date = document.createElement('p')
+        date.innerHTML = festival.date   
+         //Festival Location
+         let location = document.createElement('p')
+         location.innerHTML = festival.location
+
+        //Headliners
+        let headLinerDiv = document.createElement('div')
+        let grid = document.createAttribute("uk-grid")
+        headLinerDiv.setAttributeNode(grid)
+        headLinerDiv.style.display = "inline-block"
+        headLinerDiv.classList.add("uk-align-center")
+
+        let headliner = document.createElement('h3')
+        headliner.innerHTML = `Performing at ${festival.name}`;
+        headLinerDiv.appendChild(headliner)
+        
+        festival.artists.forEach(artist => {
+            let artistSet = document.createElement('div')
+            let artistImg = document.createElement('img')
+            artistSet.style.display = "inline-block"
+            artistSet.style.height = "400px"
+            artistSet.style.width = "400px"
+            artistImg.src = artist.image
+            artistSet.appendChild(artistImg)
+
+            let artistName = document.createElement('a')
+            artistName.innerHTML = artist.name
+            artistName.dataset.id = artist.id
+            artistName.addEventListener('click', showArtistPage)
+            artistSet.appendChild(artistName)
+
+            headLinerDiv.appendChild(artistSet)
+        })
+
+
+
+         //Reservation Btn
+         let reserveBtn = document.createElement('button')
+         reserveBtn.innerHTML = "Going?" 
+         reserveBtn.classList.add("uk-button", "uk-button-primary", "demo")
+         reserveBtn.dataset.id = festival.id
+         reserveBtn.setAttribute("type", "button")
+         reserveBtn.setAttribute('onclick', `UIkit.notification({message: '<span uk-icon=\'icon: check\'></span> You are going to ${festival.name}'})`)
+         reserveBtn.addEventListener('click', attendFestival)
+         
+         festivalInfo.appendChild(name)
+         festivalInfo.appendChild(date)
+         festivalInfo.appendChild(location)
+         festivalInfo.appendChild(description)
+         festivalInfo.appendChild(reserveBtn)
+
+         festivalInfo.appendChild(headLinerDiv)
+         
+         main.appendChild(festivalInfo)
+         
+    })
     console.log("Working")
+}
+
+function attendFestival(event) {
+    let toggleAttend = event.target
+    
+    const newAttend = {
+        "user_id" : currentUser.id,
+        "festival_id" : event.target.dataset.id
+    }
+    fetch("http://127.0.01:3000/reservations", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAttend)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+        toggleAttend.classList.remove("uk-button-primary")
+        toggleAttend.classList.add("uk-button-danger")
+        toggleAttend.innerHTML = "I'M GOING!"
+    })
+
+   console.log(event.target)
+}
+
+function unfollowArtist() {
+    console.log("working")
+}
+
+function removeFestival() {
+    console.log("working")
 }
