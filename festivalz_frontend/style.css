@@ -29,6 +29,10 @@ nav {
 
 }
 
+#logo{
+    font-family: 'Rock Salt', cursive;
+}
+
 .nav-items {
     padding-left: 20px
 }
@@ -36,5 +40,6 @@ nav {
 .uk-card-default{
     /* width: 20%;
     padding: 20px */
-    width: 40% important!;
+    /* width: 47% !important;
+    margin: 10px */
 }

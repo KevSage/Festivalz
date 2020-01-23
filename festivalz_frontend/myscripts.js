@@ -18,14 +18,15 @@ let currentUser = {
     "username": "",
     "image": "",
     "region": "",
-    "id": ""
+    "id": "",
+    "follows": []
 }
 
 function generateLogin(event) {
    event.preventDefault
    let main = document.querySelector('.test')
-   main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/04-22-16_DPV_6412_Sweetwater_420_Fest_Disco_Biscuits_by_Dave_Vann.jpg')";
-   main.classList.add("uk-background-fixed")
+   main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/Something_in_the_Water_Editorial.png')";
+   main.classList.add("uk-background-fixed", "uk-background-cover")
    main.style.height = "500px"
 
    let loginForm = document.createElement('form')
@@ -183,7 +184,7 @@ function allArtists(event) {
             artistCard.classList.add("uk-grid-small")
             artistCard.classList.add("uk-child-width-expand@s")
             artistCard.classList.add("uk-text-center")
-            artistCard.style.display = "inline"
+            artistCard.style.display = "inline-block"
 
 
 
@@ -218,7 +219,7 @@ function allArtists(event) {
             iframe.src = spotify
             
             let allArtists = document.querySelector('.artists')
-
+            allArtists.classList.add('uk-grid')
             
             artistBody.appendChild(name)
             artistBody.appendChild(bio)
@@ -242,6 +243,11 @@ function allFestivals(event) {
     event.preventDefault()
     let main = document.querySelector('.test')
     let artists = document.querySelector('.artists')
+    artists.className = "artists"
+    let grid = document.createAttribute("uk-grid")
+    artists.setAttributeNode(grid)
+    artists.classList.add('uk-text-center')
+
     main.innerHTML = ""
     main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/04-22-16_DPV_6412_Sweetwater_420_Fest_Disco_Biscuits_by_Dave_Vann.jpg')";
     main.style.height = "500px"
@@ -329,16 +335,50 @@ function showArtistPage(event) {
     .then(artist => {
         
         //jumbotron
-        
+
+        //Artist Info div
+        let artistInfo = document.createElement('div')
+        artistInfo.style.justifyContent = "center"
         //Artist Name
         let name = document.createElement('h1')
         name.innerHTML = artist.name   
+         //Artist Bio
+         let bio = document.createElement('p')
+         bio.innerHTML = artist.bio
+         
+         //Spotify
+         let iframe = document.createElement('iframe')
+         let spotify = artist.spotify
+         iframe.src = spotify
+         iframe.style.display = 'block'
+
+         //Follow Btn
+         let followBtn = document.createElement('button')
+         followBtn.innerHTML = "Follow Me" 
+         followBtn.classList.add("uk-button", "uk-button-primary", "demo")
+         followBtn.dataset.id = artist.id
+         followBtn.setAttribute("type", "button")
+         followBtn.setAttribute('onclick', `UIkit.notification({message: '<span uk-icon=\'icon: check\'></span> You are now following ${artist.name}'})`)
+
+         followBtn.addEventListener('click', followArtist)
+
+         artistInfo.appendChild(name)
+         artistInfo.appendChild(bio)
+         artistInfo.appendChild(iframe)
+         artistInfo.appendChild(followBtn)
+
+
+
+
         //Upcoming Performances 
         let performanceDiv = document.createElement('div')
         performanceDiv.style.display = "inline-block"
+
+        
+
         let upcoming = document.createElement('h3')
         upcoming.innerHTML = `${artist.name}'s Upcoming Performances`
-        performanceDiv.appendChild(upcoming)
+        performanceDiv.appendChild(artistInfo, upcoming)
 
         artist.festivals.forEach(function(festival) { 
             //jumbotron
@@ -382,7 +422,6 @@ function showArtistPage(event) {
            festivalDiv.appendChild(price)
            festivalDiv.appendChild(reserveBtn)
            performanceDiv.appendChild(festivalDiv)
-           debugger
            //Event Listeners
            reserveBtn.addEventListener('click', followArtist)
            reserveBtn.addEventListener('click', showFestivalPage)
@@ -487,30 +526,61 @@ function showUserPage() {
     infoDiv.appendChild(userName)
     infoDiv.appendChild(region)
 
-    //Follows
-    let followDiv = document.createElement('div')
-    let following = document.createElement('h4')
-    following.innerHTML = `${currentUser.username} is currently following`
-    followDiv.appendChild(following)
-    currentUser.artists.forEach(function(artist) {
-        let follow = document.createElement('p')
-        follow.innerHTML = artist.name
-        followDiv.appendChild(follow)
-    })
-    
-
-    
     header.appendChild(imgDiv)
     header.appendChild(infoDiv)
     article.appendChild(header)
     main.appendChild(article)
-    main.appendChild(followDiv)
+
+    //Follows
+    
+
+    fetch("http://localhost:3000/users/" + currentUser.id)
+    .then(res => res.json())
+    .then(user => {
+        let followDiv = document.createElement('div')
+        let following = document.createElement('h4')
+        following.innerHTML = `${currentUser.username} is currently following`
+        followDiv.appendChild(following)
+        if(user.artists) {
+          user.artists.forEach(function(artist) {
+            let follow = document.createElement('p')
+            follow.innerHTML = artist.name
+            followDiv.appendChild(follow)
+            main.appendChild(followDiv)
+
+        })
+
+       }
+    })
+    
     console.log(currentUser)
     
 }
 
-function followArtist() {
+function followArtist(event) {
 
+    let toggleFollow = event.target
+    
+    const newFollow = {
+        "user_id" : currentUser.id,
+        "artist_id" : event.target.dataset.id
+    }
+    fetch("http://127.0.01:3000/follows", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFollow)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data)
+        toggleFollow.classList.remove("uk-button-primary")
+        toggleFollow.classList.add("uk-button-danger")
+        toggleFollow.innerHTML = "FOLLOWING"
+    })
+
+   console.log(event.target)
 }
 
 function showFestivalPage() {
