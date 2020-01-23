@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
        let festivalLink = document.querySelector('#festivals-link')
        festivalLink.addEventListener('click', allFestivals)
+
+       let profile = document.querySelector('#my-profile')
+       profile.addEventListener('click', showUserPage)
 })
 let currentUser = {
     "username": "",
@@ -446,6 +449,8 @@ function postUserData() {
 }
 
 function showUserPage() {
+    let jumbotron = document.querySelector('.test')
+    jumbotron.innerHTML = ''
 
     let main = document.querySelector('.artists')
     main.innerHTML = ''
@@ -476,15 +481,32 @@ function showUserPage() {
     let userName = document.createElement('h4')
     userName.classList.add('uk-comment-title', 'uk-margin-remove')
     userName.innerHTML = currentUser.username
+    let region = document.createElement('p')
+    region.innerHTML = currentUser.region
+
     infoDiv.appendChild(userName)
+    infoDiv.appendChild(region)
+
+    //Follows
+    let followDiv = document.createElement('div')
+    let following = document.createElement('h4')
+    following.innerHTML = `${currentUser.username} is currently following`
+    followDiv.appendChild(following)
+    currentUser.artists.forEach(function(artist) {
+        let follow = document.createElement('p')
+        follow.innerHTML = artist.name
+        followDiv.appendChild(follow)
+    })
+    
+
     
     header.appendChild(imgDiv)
     header.appendChild(infoDiv)
     article.appendChild(header)
     main.appendChild(article)
+    main.appendChild(followDiv)
     console.log(currentUser)
     
-    debugger
 }
 
 function followArtist() {
