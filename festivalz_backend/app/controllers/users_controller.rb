@@ -6,14 +6,7 @@ class UsersController < ApplicationController
 
     def show
         @user = User.find(params[:id])
-        # userExt = {
-        #     "user": @user,
-        #     "artists": @user.follows.map {|f| f.artist},
-        #     "ids": @user.follows.map {|f| f.id},
-        #     "reservations": @user.reservations.map {|f| f.festival}
-
-        # }
-        # render json: userExt
+        
         render json: @user, include: [:follows, :reservations]
     end
 
@@ -24,6 +17,7 @@ class UsersController < ApplicationController
 
     def update
         @user = User.find(params[:id])
+        @user.update(user_params)
         render json: @user, status: :ok
     end
 

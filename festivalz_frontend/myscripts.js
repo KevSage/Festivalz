@@ -23,8 +23,15 @@ let currentUser = {
 }
 
 function generateLogin(event) {
-   event.preventDefault
+//    event.preventDefault
+
    let main = document.querySelector('.test')
+   main.innerHTML = ""
+   let lower = document.querySelector('.artists')
+   lower.innerHTML = ""
+
+
+   main.style.display = "block"
    main.style.backgroundImage = "url('https://1b7ta73fjmj23201tc3suvsi-wpengine.netdna-ssl.com/wp-content/uploads/2019/10/Something_in_the_Water_Editorial.png')";
    main.classList.add("uk-background-fixed", "uk-background-cover")
    main.style.height = "500px"
@@ -686,6 +693,7 @@ function showUserPage() {
 
         if(user.reservations) {
             user.reservations.forEach(function(reservation) {
+                debugger
                 let festivalDiv = document.createElement('div')
                 let reservationP = document.createElement('p')
 
@@ -709,33 +717,7 @@ function showUserPage() {
             })
         }
 
-    //     if(user.festivals) {
-    //         let attending = document.createElement('h4')
-    //         attending.innerHTML = `${currentUser.username} is going to`
 
-    //       user.festivals.forEach(function(festival) {
-    //           debugger
-    //         let festivalDiv = document.createElement('div')
-    //         let attendDiv = document.createElement('div')
-            
-    //         let festivalLink = document.createElement('a')
-    //         festivalLink.dataset.id = festival.id
-    //         festivalLink.innerHTML = festival.name
-    //         festivalLink.addEventListener('click', showFestivalPage)
-
-    //         let attendFestivalBtn = document.createElement('button')
-    //         attendFestivalBtn.innerHTML = "Remove"
-    //         attendFestivalBtn.classList.add("uk-button", "uk-button-danger", "demo")
-    //         attendFestivalBtn.addEventListener('click', removeFestival)
-    //         attendDiv.appendChild(attending)
-    //         attendDiv.appendChild(festivalLink)
-    //         attendDiv.appendChild(attendFestivalBtn)
-    //         festivalDiv.appendChild(attendDiv)
-    //         main.appendChild(festivalDiv)
-
-    //     })
-
-    //    }
     })
     
     console.log(currentUser)
@@ -905,10 +887,19 @@ function unfollowArtist(event) {
     console.log(event.target)
 }
 
-function removeFestival() {
-    console.log("working")
-}
+function removeFestival(event) {
+    fetch('http://localhost:3000/reservations/' + event.target.dataset.id, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data)
+        event.target.parentElement.remove()
 
+    })
+    .catch(err => console.log(err))
+    console.log(event.target)
+}
 
 function editUser(event) {
     event.preventDefault()
@@ -952,22 +943,22 @@ function deleteUser(event) {
     fetch('http://127.0.0.1:3000/users/' + currentUser.id, {method: "DELETE"})
     .then(res => res.json())
     .then(res => {
-      console.log('Deleted:', res.message)
+      console.log('Deleted:', res)
       currentUser = {
         "username" : "",
         "image" : "",
         "region": "",
         "id" : ""
     }
+    
     debugger
-        generateFestivals()
+        generateLogin()
 
         return res
     
     
 
     })
-    .catch(err => console.log(err))
     
 }
 
