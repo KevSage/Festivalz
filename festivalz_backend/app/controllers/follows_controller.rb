@@ -1,12 +1,12 @@
 class FollowsController < ApplicationController
     def index
         @follows = Follow.all
-        render :json => @follows, include: [:artists, :users]
+        render :json => @follows, include: [:artist, :user]
     end
 
     def create
         @follow = Follow.create(follow_params)
-        render json: @follow, include: [:artists, :users], status: :created
+        render json: @follow, include: [:artist, :user], status: :created
     end
      
     def destroy

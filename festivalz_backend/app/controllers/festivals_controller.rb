@@ -9,4 +9,10 @@ class FestivalsController < ApplicationController
         @festival = Festival.find(params[:id])
         render json: @festival, include: [:performances, :reservations, :artists]
     end
+
+    def destroy
+        @festival = Festival.find(params[:id])
+        @festival.destroy
+        render json: @festival
+    end
 end
