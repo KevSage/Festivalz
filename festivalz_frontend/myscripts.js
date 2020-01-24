@@ -151,6 +151,7 @@ function registerUser(event) {
 function generateUserPage() {
   let main = document.querySelector('.test')
   main.innerHTML = ""
+  main.className = "test"
   let container = document.createElement('div')
   container.classList.add("uk-height-large")
   container.classList.add("uk-background-cover")
@@ -166,7 +167,10 @@ function generateFestivals() {
 
 }
 function allArtists(event) {
+
     event.preventDefault()
+    scrollWin()
+
     let main = document.querySelector('.test')
     let artists = document.querySelector('.artists')
     // artists.innerHTML = ""
@@ -240,6 +244,11 @@ function allArtists(event) {
 }
 
 function allFestivals(event) {
+    scrollWin()
+
+    let jumbotron = document.querySelector('.test')
+    jumbotron.style.display = "block"
+
     event.preventDefault()
     let main = document.querySelector('.test')
     let artists = document.querySelector('.artists')
@@ -328,6 +337,9 @@ function allFestivals(event) {
 
 
 function showArtistPage(event) {
+    scrollWin()
+    let jumbotron = document.querySelector('.test')
+    jumbotron.style.display = "block"
     let main = document.querySelector('.artists')
     main.style.height = "500px"
     fetch("http://localhost:3000/artists/" + event.target.dataset.id)
@@ -446,6 +458,8 @@ function showArtistPage(event) {
 }
 
 function createUser(event) {
+    let jumbotron = document.querySelector('.test')
+    jumbotron.style.display = "block"
     event.preventDefault()
     let pic = []
     let newName = event.target.querySelector("#newUserName")
@@ -499,7 +513,7 @@ function postUserData() {
 
 function showUserPage() {
     let jumbotron = document.querySelector('.test')
-    jumbotron.display = "none"
+    jumbotron.style.display = "none"
 
     let main = document.querySelector('.artists')
     main.innerHTML = ''
@@ -547,6 +561,8 @@ function showUserPage() {
     profileBtns.setAttributeNode(margin)
     let editBtn = document.createElement('button')
     editBtn.innerHTML = "Edit"
+   
+
     let deleteBtn = document.createElement('button')
     deleteBtn.innerHTML = "Delete"
     deleteBtn.addEventListener('click', deleteUser)
@@ -557,6 +573,7 @@ function showUserPage() {
 
     //Edit Form
     let editForm = document.createElement('form')
+    editForm.classList.add("toggleEdit")
     editForm.dataset.id = currentUser.id
 
     let nameDiv = document.createElement('div')
@@ -608,7 +625,10 @@ function showUserPage() {
 
 
     header.appendChild(editForm)
-
+    editForm.style.display = "none"
+    editBtn.addEventListener('click', function() {
+        editForm.style.display = "block"
+    })
 
 
 
@@ -623,26 +643,59 @@ function showUserPage() {
         let following = document.createElement('h4')
         following.innerHTML = `${currentUser.username} is currently following`
         followDiv.appendChild(following)
-        if(user.artists) {
-          user.artists.forEach(function(artist) {
-            let artistDiv = document.createElement('div')
-            let follow = document.createElement('p')
-            follow.innerHTML = artist.name
-            artistDiv.appendChild(follow)
-            main.appendChild(followDiv)
+        debugger
 
-            let unfollowBtn = document.createElement('button')
+        if(user.follows) {            
+            user.follows.forEach(function(follow) {
+                debugger
+            let artistDiv = document.createElement('div')
+            let followP = document.createElement('p')
+            
+
+            fetch("http://localhost:3000/follows/" + follow.id)
+            .then(res => res.json())
+            .then(follow => {
+            followP.innerHTML = follow.artist.name
+            artistDiv.appendChild(followP)
+            main.appendChild(followDiv)
+                let unfollowBtn = document.createElement('button')
             unfollowBtn.innerHTML = "Unfollow"
             unfollowBtn.classList.add("uk-button", "uk-button-danger", "demo")
-            unfollowBtn.dataset.id = artist.id
+            unfollowBtn.dataset.id = follow.id
             unfollowBtn.addEventListener('click', unfollowArtist)
             artistDiv.appendChild(unfollowBtn)
             followDiv.appendChild(artistDiv)
             main.appendChild(followDiv)
+                debugger
+            })
+            
+            
+            })
 
-        })
+        }
+        
 
-       }
+
+    //     if(user.artists) {
+    //       user.artists.forEach(function(artist) {
+    //         let artistDiv = document.createElement('div')
+    //         let follow = document.createElement('p')
+    //         follow.innerHTML = artist.name
+    //         artistDiv.appendChild(follow)
+    //         main.appendChild(followDiv)
+
+    //         let unfollowBtn = document.createElement('button')
+    //         unfollowBtn.innerHTML = "Unfollow"
+    //         unfollowBtn.classList.add("uk-button", "uk-button-danger", "demo")
+    //         unfollowBtn.dataset.id = artist.id
+    //         unfollowBtn.addEventListener('click', unfollowArtist)
+    //         artistDiv.appendChild(unfollowBtn)
+    //         followDiv.appendChild(artistDiv)
+    //         main.appendChild(followDiv)
+
+    //     })
+
+    //    }
     })
 
     //Fetch Festivals
@@ -656,6 +709,7 @@ function showUserPage() {
             attending.innerHTML = `${currentUser.username} is going to`
 
           user.festivals.forEach(function(festival) {
+              debugger
             let festivalDiv = document.createElement('div')
             let attendDiv = document.createElement('div')
             
@@ -712,7 +766,10 @@ function followArtist(event) {
 }
 
 function showFestivalPage(event) {
+    scrollWin()
 
+    let jumbotron = document.querySelector('.test')
+    jumbotron.style.display = "block"
     let main = document.querySelector('.artists')
     main.style.height = "500px"
 
@@ -847,8 +904,11 @@ function removeFestival() {
     console.log("working")
 }
 
+
 function editUser(event) {
     event.preventDefault()
+    let edit = document.querySelector('.toggleEdit')
+    edit.style.display = "block"
 
     let newName = document.querySelector('#edit-name')
     newName = newName.value
@@ -906,5 +966,9 @@ function deleteUser(event) {
     
 }
 
+
+function scrollWin() {
+    window.scrollTo(500, 0);
+  }
 
     

@@ -6,7 +6,15 @@ class UsersController < ApplicationController
 
     def show
         @user = User.find(params[:id])
-        render json: @user, include: [:follows, :reservations, :festivals, :artists]
+        # userExt = {
+        #     "user": @user,
+        #     "artists": @user.follows.map {|f| f.artist},
+        #     "ids": @user.follows.map {|f| f.id},
+        #     "reservations": @user.reservations.map {|f| f.festival}
+
+        # }
+        # render json: userExt
+        render json: @user, include: [:follows, :reservations]
     end
 
     def create

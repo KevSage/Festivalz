@@ -4,6 +4,12 @@ class FollowsController < ApplicationController
         render :json => @follows, include: [:artist, :user]
     end
 
+    def show
+        @follow = Follow.find(params[:id])
+        render json: @follow, include: [:artist, :user]
+
+    end
+
     def create
         @follow = Follow.create(follow_params)
         render json: @follow, include: [:artist, :user], status: :created
