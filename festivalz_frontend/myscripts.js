@@ -541,6 +541,78 @@ function showUserPage() {
     article.appendChild(header)
     main.appendChild(article)
 
+    //Edit and Delete Buttons
+    let profileBtns = document.createElement('p')
+    let margin = document.createAttribute("uk-margin")
+    profileBtns.setAttributeNode(margin)
+    let editBtn = document.createElement('button')
+    editBtn.innerHTML = "Edit"
+    let deleteBtn = document.createElement('button')
+    deleteBtn.innerHTML = "Delete"
+    deleteBtn.addEventListener('click', deleteUser)
+    profileBtns.appendChild(editBtn)
+    profileBtns.appendChild(deleteBtn)
+    article.appendChild(profileBtns)
+
+
+    //Edit Form
+    let editForm = document.createElement('form')
+    editForm.dataset.id = currentUser.id
+
+    let nameDiv = document.createElement('div')
+    nameDiv.classList.add("uk-margin")
+    let nameLabel = document.createElement('label')
+    nameLabel.innerHTML = "Edit Name"
+    let nameInput = document.createElement('input')
+    nameInput.classList.add("uk-input", "uk-form-width-medium")
+    nameInput.id = "edit-name"
+    nameDiv.appendChild(nameLabel)
+    nameDiv.appendChild(nameInput)
+    editForm.appendChild(nameDiv)
+
+    let regionDiv = document.createElement('div')
+    regionDiv.classList.add("uk-margin")
+    let regionLabel = document.createElement('label')
+    regionLabel.innerHTML = "Edit Region"
+    let regionSelect = document.createElement('select')
+    regionSelect.classList.add("uk-select")
+    regionSelect.id = "region-select"
+    
+    let regionOption1 = document.createElement('option')
+    regionOption1.innerHTML = "Southeast"
+    let regionOption2 = document.createElement('option')
+    regionOption2.innerHTML = "Northeast"
+    let regionOption3 = document.createElement('option')
+    regionOption3.innerHTML = "Midwest"
+    let regionOption4 = document.createElement('option')
+    regionOption4.innerHTML = "West Coast"
+    let regionOption5 = document.createElement('option')
+    regionOption5.innerHTML = "Southwest"
+    //Append Region
+    regionSelect.appendChild(regionOption1)
+    regionSelect.appendChild(regionOption2)
+    regionSelect.appendChild(regionOption3)
+    regionSelect.appendChild(regionOption4)
+    regionSelect.appendChild(regionOption5)
+
+    regionDiv.appendChild(regionLabel)
+    regionDiv.appendChild(regionSelect)
+    editForm.appendChild(regionDiv)
+
+    let submitBtn = document.createElement('button')
+    submitBtn.classList.add("uk-button", "uk-button-default")
+    submitBtn.innerHTML = "Submit"
+    editForm.appendChild(submitBtn)
+    submitBtn.addEventListener('click', editUser)
+
+
+
+    header.appendChild(editForm)
+
+
+
+
+
     //Fetch Follows
     
 
@@ -757,7 +829,7 @@ function attendFestival(event) {
 }
 
 function unfollowArtist(event) {
-    debugger
+    
     fetch('http://localhost:3000/follows/' + event.target.dataset.id, {
         method: 'DELETE'
     })
@@ -767,10 +839,72 @@ function unfollowArtist(event) {
         event.target.parentElement.remove()
 
     })
-    .catch(err => console.error(err))
+    .catch(err => console.log(err))
     console.log(event.target)
 }
 
 function removeFestival() {
     console.log("working")
 }
+
+function editUser(event) {
+    event.preventDefault()
+
+    let newName = document.querySelector('#edit-name')
+    newName = newName.value
+
+    let newRegion = document.querySelector('#region-select')
+    newRegion = newRegion.value
+       debugger
+
+    fetch('http://127.0.0.1:3000/users/' + currentUser.id, {
+        method: "PATCH",
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+            "username": newName,
+            "region": newRegion
+            
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data)
+        debugger
+        currentUser.username = data.username
+        currentUser.region = data.region
+        showUserPage()
+    })
+
+
+
+
+    console.log("submitting")
+}
+
+function deleteUser(event) {
+    fetch('http://127.0.0.1:3000/users/' + currentUser.id, {method: "DELETE"})
+    .then(res => res.json())
+    .then(res => {
+      console.log('Deleted:', res.message)
+      currentUser = {
+        "username" : "",
+        "image" : "",
+        "region": "",
+        "id" : ""
+    }
+    debugger
+        generateFestivals()
+
+        return res
+    
+    
+
+    })
+    .catch(err => console.log(err))
+    
+}
+
+
+    
