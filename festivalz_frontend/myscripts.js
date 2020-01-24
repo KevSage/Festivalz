@@ -499,7 +499,7 @@ function postUserData() {
 
 function showUserPage() {
     let jumbotron = document.querySelector('.test')
-    jumbotron.innerHTML = ''
+    jumbotron.display = "none"
 
     let main = document.querySelector('.artists')
     main.innerHTML = ''
@@ -553,16 +553,19 @@ function showUserPage() {
         followDiv.appendChild(following)
         if(user.artists) {
           user.artists.forEach(function(artist) {
+            let artistDiv = document.createElement('div')
             let follow = document.createElement('p')
             follow.innerHTML = artist.name
-            followDiv.appendChild(follow)
+            artistDiv.appendChild(follow)
             main.appendChild(followDiv)
 
             let unfollowBtn = document.createElement('button')
             unfollowBtn.innerHTML = "Unfollow"
             unfollowBtn.classList.add("uk-button", "uk-button-danger", "demo")
+            unfollowBtn.dataset.id = artist.id
             unfollowBtn.addEventListener('click', unfollowArtist)
-            followDiv.appendChild(unfollowBtn)
+            artistDiv.appendChild(unfollowBtn)
+            followDiv.appendChild(artistDiv)
             main.appendChild(followDiv)
 
         })
@@ -753,8 +756,19 @@ function attendFestival(event) {
    console.log(event.target)
 }
 
-function unfollowArtist() {
-    console.log("working")
+function unfollowArtist(event) {
+    debugger
+    fetch('http://localhost:3000/follows/' + event.target.dataset.id, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data)
+        event.target.parentElement.remove()
+
+    })
+    .catch(err => console.error(err))
+    console.log(event.target)
 }
 
 function removeFestival() {
