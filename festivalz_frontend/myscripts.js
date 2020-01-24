@@ -634,8 +634,6 @@ function showUserPage() {
 
 
     //Fetch Follows
-    
-
     fetch("http://localhost:3000/users/" + currentUser.id)
     .then(res => res.json())
     .then(user => {
@@ -674,63 +672,70 @@ function showUserPage() {
 
         }
         
-
-
-    //     if(user.artists) {
-    //       user.artists.forEach(function(artist) {
-    //         let artistDiv = document.createElement('div')
-    //         let follow = document.createElement('p')
-    //         follow.innerHTML = artist.name
-    //         artistDiv.appendChild(follow)
-    //         main.appendChild(followDiv)
-
-    //         let unfollowBtn = document.createElement('button')
-    //         unfollowBtn.innerHTML = "Unfollow"
-    //         unfollowBtn.classList.add("uk-button", "uk-button-danger", "demo")
-    //         unfollowBtn.dataset.id = artist.id
-    //         unfollowBtn.addEventListener('click', unfollowArtist)
-    //         artistDiv.appendChild(unfollowBtn)
-    //         followDiv.appendChild(artistDiv)
-    //         main.appendChild(followDiv)
-
-    //     })
-
-    //    }
     })
 
     //Fetch Festivals
     fetch("http://localhost:3000/users/" + currentUser.id)
     .then(res => res.json())
     .then(user => {
-
+        let reservationDiv = document.createElement('div')
+        let following = document.createElement('h4')
+        following.innerHTML = `${currentUser.username} is attending`
+        reservationDiv.appendChild(following)
         debugger
-        if(user.festivals) {
-            let attending = document.createElement('h4')
-            attending.innerHTML = `${currentUser.username} is going to`
 
-          user.festivals.forEach(function(festival) {
-              debugger
-            let festivalDiv = document.createElement('div')
-            let attendDiv = document.createElement('div')
+        if(user.reservations) {
+            user.reservations.forEach(function(reservation) {
+                let festivalDiv = document.createElement('div')
+                let reservationP = document.createElement('p')
+
+                fetch("http://localhost:3000/reservations/" + reservation.id)
+                .then(res => res.json())
+                .then(reservation => {
+                  reservationP.innerHTML = reservation.festival.name
+                  festivalDiv.appendChild(reservationP)
+                  main.appendChild(reservationDiv)
+                  let unattendBtn = document.createElement('button')
+                  unattendBtn.innerHTML = "Cancel"
+                  unattendBtn.classList.add("uk-button", "uk-button-danger", "demo")
+                  unattendBtn.dataset.id = reservation.id
+                  unattendBtn.addEventListener('click', removeFestival)
+                  festivalDiv.appendChild(unattendBtn)
+                  reservationDiv.appendChild(festivalDiv)
+                  main.appendChild(reservationDiv)
+                  
+                })
+     
+            })
+        }
+
+    //     if(user.festivals) {
+    //         let attending = document.createElement('h4')
+    //         attending.innerHTML = `${currentUser.username} is going to`
+
+    //       user.festivals.forEach(function(festival) {
+    //           debugger
+    //         let festivalDiv = document.createElement('div')
+    //         let attendDiv = document.createElement('div')
             
-            let festivalLink = document.createElement('a')
-            festivalLink.dataset.id = festival.id
-            festivalLink.innerHTML = festival.name
-            festivalLink.addEventListener('click', showFestivalPage)
+    //         let festivalLink = document.createElement('a')
+    //         festivalLink.dataset.id = festival.id
+    //         festivalLink.innerHTML = festival.name
+    //         festivalLink.addEventListener('click', showFestivalPage)
 
-            let attendFestivalBtn = document.createElement('button')
-            attendFestivalBtn.innerHTML = "Remove"
-            attendFestivalBtn.classList.add("uk-button", "uk-button-danger", "demo")
-            attendFestivalBtn.addEventListener('click', removeFestival)
-            attendDiv.appendChild(attending)
-            attendDiv.appendChild(festivalLink)
-            attendDiv.appendChild(attendFestivalBtn)
-            festivalDiv.appendChild(attendDiv)
-            main.appendChild(festivalDiv)
+    //         let attendFestivalBtn = document.createElement('button')
+    //         attendFestivalBtn.innerHTML = "Remove"
+    //         attendFestivalBtn.classList.add("uk-button", "uk-button-danger", "demo")
+    //         attendFestivalBtn.addEventListener('click', removeFestival)
+    //         attendDiv.appendChild(attending)
+    //         attendDiv.appendChild(festivalLink)
+    //         attendDiv.appendChild(attendFestivalBtn)
+    //         festivalDiv.appendChild(attendDiv)
+    //         main.appendChild(festivalDiv)
 
-        })
+    //     })
 
-       }
+    //    }
     })
     
     console.log(currentUser)
