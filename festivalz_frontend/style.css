@@ -1,49 +1,76 @@
 .sidenav {
-    color: skyblue;
-    margin-top: 0px;
-    position: absolute;
-    background-color: skyblue
-
+  color: skyblue;
+  margin-top: 0px;
+  position: absolute;
+  background-color: skyblue;
 }
 
 #menu-list a:hover {
-
   color: skyblue;
-  transition: 0.5s ease
+  transition: 0.5s ease;
 }
 
 nav {
-    justify-content: center;
-    margin-bottom: 0px;
+  justify-content: center;
+  margin-bottom: 0px;
 }
 #nav {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
+  color: white;
+  background-color: #323031;
+}
+.registerForm {
+  width: 50%;
+}
+.artists {
+  margin: auto !important;
+  width: 100% !important;
+  justify-content: center !important;
 }
 
+.artists .uk-card {
+  margin: 20px !important;
+}
+.featured {
+  font-size: 56px;
+  text-align: center;
+  width: 100%;
+  color: blue;
+}
 .test {
-    display: flex;
-    text-align: center;
-    padding-top: 100px;
-    justify-content: center;
-    height: 100vh;
-
+  display: flex;
+  text-align: center;
+  padding: 50px 0px;
+  justify-content: center;
+  /* height: 100vh !important; */
 }
 
-#logo{
-    font-family: 'Rock Salt', cursive;
+#logo {
+  font-family: "Rock Salt", cursive;
+  color: white;
 }
 
 a {
-    font-family: 'Rock Salt', cursive;
+  font-family: "Rock Salt", cursive;
 }
 
 .nav-items {
-    padding-left: 20px
+  padding-left: 20px;
 }
 
-.uk-card-default{
-    /* width: 20%;
+.uk-card {
+  padding-left: 0px !important;
+}
+
+.uk-card-default {
+  /* width: 20%;
     padding: 20px */
-    /* width: 47% !important;
+  /* width: 47% !important;
     margin: 10px */
+}
+.artists {
+  margin-top: 50px !important;
+}
+.artists iframe {
+  display: inline !important;
 }
